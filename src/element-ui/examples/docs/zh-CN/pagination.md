@@ -100,7 +100,7 @@
       @current-change="handleCurrentChange"
       :current-page.sync="currentPage3"
       :page-size="100"
-      layout="prev, pager, next, jumper"
+      layout="first, prev, pager, next, last, jumper"
       :total="1000">
     </el-pagination>
   </div>

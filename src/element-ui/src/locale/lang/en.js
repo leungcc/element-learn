@@ -73,6 +73,7 @@ export default {
       goto: 'Go to',
       pagesize: '/page',
       total: 'Total {total}',
+      totalPage: '{total} page in total',
       pageClassifier: ''
     },
     messagebox: {

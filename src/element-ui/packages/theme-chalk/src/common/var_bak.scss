@@ -14,7 +14,7 @@ $--color-transition-base: color .2s cubic-bezier(.645,.045,.355,1) !default;
 $--color-white: #fff !default;
 $--color-black: #000 !default;
 
-$--color-primary: #3fa8f4 !default;
+$--color-primary: #409EFF !default;
 $--color-primary-light-1: mix($--color-white, $--color-primary, 10%) !default; /* 53a8ff */
 $--color-primary-light-2: mix($--color-white, $--color-primary, 20%) !default; /* 66b1ff */
 $--color-primary-light-3: mix($--color-white, $--color-primary, 30%) !default; /* 79bbff */
@@ -275,12 +275,12 @@ $--msgbox-danger-color: $--color-danger !default;
 /* Message
 -------------------------- */
 $--message-shadow: $--box-shadow-base !default;
-$--message-min-width: 260px !default;
+$--message-min-width: 380px !default;
 $--message-background-color: #edf2fc !default;
-$--message-padding: 25px 20px 25px 20px !default;
+$--message-padding: 15px 15px 15px 20px !default;
 $--message-content-color: $--color-text-regular !default;
 $--message-close-color: $--color-text-placeholder !default;
-$--message-close-size: 20px !default;
+$--message-close-size: 16px !default;
 $--message-close-hover-color: $--color-text-secondary !default;
 
 $--message-success-color: $--color-success !default;
@@ -343,7 +343,7 @@ $--input-medium-font-size: 14px !default;
 $--input-medium-height: 36px !default;
 
 $--input-small-font-size: 13px !default;
-$--input-small-height: 30px !default;
+$--input-small-height: 32px !default;
 
 $--input-mini-font-size: 12px !default;
 $--input-mini-height: 28px !default;

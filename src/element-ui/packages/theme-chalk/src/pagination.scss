@@ -10,6 +10,35 @@
   font-weight: bold;
   @include utils-clearfix;
 
+  .btn-next .arrow-wrap,
+  .btn-prev .arrow-wrap,
+  .btn-first .arrow-wrap,
+  .btn-last .arrow-wrap {
+    min-width: 12px;
+
+    &:hover {
+      color: $--pagination-hover-fill;
+    }
+
+  }
+  .btn-next .arrow-wrap > .el-icon,
+  .btn-prev .arrow-wrap > .el-icon,
+  .btn-first .arrow-wrap > .el-icon,
+  .btn-last .arrow-wrap > .el-icon {
+    display: inline-block;
+    width: 8px;
+    padding: 4px;
+  }
+
+  .btn-next[disabled='disabled'] .arrow-wrap,
+  .btn-prev[disabled='disabled'] .arrow-wrap,
+  .btn-first[disabled='disabled'] .arrow-wrap,
+  .btn-last[disabled='disabled'] .arrow-wrap {
+    &:hover {
+      color: $--pagination-button-disabled-color;
+    }
+  }
+
   span:not([class*=suffix]),
   button {
     display: inline-block;
@@ -62,9 +91,14 @@
       cursor: not-allowed;
     }
   }
-
+  
   .btn-prev,
-  .btn-next {
+  .btn-next, 
+  .btn-first,
+  .btn-last {
+    min-width: 12px;
+    //padding-right: 0;
+
     background: center center no-repeat;
     background-size: 16px;
     background-color: $--pagination-fill;
@@ -72,11 +106,23 @@
     margin: 0;
     color: $--pagination-button-color;
 
+    &:hover {
+      color: $--pagination-button-color;
+    }
+
     .el-icon {
       display: block;
       font-size: 12px;
       font-weight: bold;
     }
+  }
+  
+  .btn-prev, .btn-first {
+    padding-right: 0;
+  }
+
+  .btn-next, .btn-last {
+    padding-left: 0;
   }
 
   .btn-prev {

@@ -46,9 +46,13 @@ export default {
 
     popperClass: String,
 
+    firstText: String,
+
     prevText: String,
 
     nextText: String,
+
+    lastText: String,
 
     background: Boolean,
 
@@ -72,10 +76,12 @@ export default {
     const layout = this.layout || '';
     if (!layout) return;
     const TEMPLATE_MAP = {
+      first: <first></first>,
       prev: <prev></prev>,
       jumper: <jumper></jumper>,
       pager: <pager currentPage={ this.internalCurrentPage } pageCount={ this.internalPageCount } pagerCount={ this.pagerCount } on-change={ this.handleCurrentChange } disabled={ this.disabled }></pager>,
       next: <next></next>,
+      last: <last></last>,
       sizes: <sizes pageSizes={ this.pageSizes }></sizes>,
       slot: <my-slot></my-slot>,
       total: <total></total>
@@ -116,6 +122,26 @@ export default {
         );
       }
     },
+
+    First: {
+      render(h) {
+        return (
+          <button
+            type="button"
+            class="btn-first"
+            disabled={ this.$parent.disabled || this.$parent.internalCurrentPage <= 1 }
+            on-click={ this.$parent.first }
+          >
+          {
+            this.$parent.firstText ?
+            <span>{ this.$parent.firstText }</span> :
+            <span class="arrow-wrap"><i class="el-icon el-icon-d-arrow-left"></i></span>
+          }
+          </button>
+        )
+      }
+    },
+
     Prev: {
       render(h) {
         return (
@@ -127,7 +153,7 @@ export default {
             {
               this.$parent.prevText
                 ? <span>{ this.$parent.prevText }</span>
-                : <i class="el-icon el-icon-arrow-left"></i>
+                : <span class="arrow-wrap"><i class="el-icon el-icon-arrow-left"></i></span>
             }
           </button>
         );
@@ -144,11 +170,32 @@ export default {
             on-click={ this.$parent.next }>
             {
               this.$parent.nextText
-                ? <span>{ this.$parent.nextText }</span>
-                : <i class="el-icon el-icon-arrow-right"></i>
+                ? 
+                
+                  <span>{ this.$parent.nextText }</span> :
+                  <span class="arrow-wrap"><i class="el-icon el-icon-arrow-right"></i></span>
             }
           </button>
         );
+      }
+    },
+
+    Last: {
+      render(h) {
+        return (
+          <button
+            type="button"
+            class="btn-last"
+            disabled={ this.$parent.disabled || this.$parent.internalCurrentPage === this.$parent.internalPageCount || this.$parent.internalPageCount === 0 }
+            on-click={ this.$parent.last }
+          >
+            {
+              this.$parent.lastText ? <span>{ this.$parent.nextText }</span> 
+              : 
+              <span class="arrow-wrap"><i class="el-icon el-icon-d-arrow-right"></i></span>
+            }
+          </button>
+        )
       }
     },
 
@@ -285,7 +332,9 @@ export default {
               onChange={ this.handleChange }
               onFocus={ this.handleFocus }
               onBlur={ this.handleBlur }/>
+            <span style="fontSize:14px;">{ '/ ' + this.$parent.internalPageCount }</span>
             { this.t('el.pagination.pageClassifier') }
+            {/* <span style="margin-left:14px;fontSize:14px;">{ this.t('el.pagination.totalPage', { total: this.$parent.internalPageCount }) }</span> */}
           </span>
         );
       }
@@ -312,6 +361,14 @@ export default {
       this.userChangePageSize = true;
       this.emitChange();
     },
+    
+    first() {
+      if (this.disabled) return;
+      const newVal = 1;
+      this.internalCurrentPage = this.getValidCurrentPage(newVal);
+      this.$emit('first-click', this.internalCurrentPage);
+      this.emitChange();
+    },
 
     prev() {
       if (this.disabled) return;
@@ -326,6 +383,13 @@ export default {
       const newVal = this.internalCurrentPage + 1;
       this.internalCurrentPage = this.getValidCurrentPage(newVal);
       this.$emit('next-click', this.internalCurrentPage);
+      this.emitChange();
+    },
+
+    last() {
+      if (this.disabled) return;
+      this.internalCurrentPage = this.internalPageCount;
+      this.$emit('last-click', this.internalCurrentPage);
       this.emitChange();
     },
 
