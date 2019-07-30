@@ -224,6 +224,9 @@
   };
 
   export default {
+    mounted() {
+      
+    },
     watch: {
       filterText(val) {
         this.$refs.tree2.filter(val);
@@ -397,7 +400,13 @@
 
 :::demo
 ```html
-<el-tree :data="data" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
+<el-tree 
+  :data="data" 
+  :props="defaultProps" 
+  @node-click="handleNodeClick"
+  :arrow-right="true"
+  :forbid-clk-levels="[1]">
+</el-tree>
 
 <script>
   export default {
@@ -699,7 +708,8 @@
   node-key="id"
   ref="tree"
   highlight-current
-  :props="defaultProps">
+  :props="defaultProps"
+  :arrow-right="true">
 </el-tree>
 
 <div class="buttons">
@@ -940,6 +950,9 @@
 
 <script>
   export default {
+    mounted() {
+      //dont write here
+    },
     watch: {
       filterText(val) {
         this.$refs.tree2.filter(val);

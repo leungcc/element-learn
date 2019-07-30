@@ -1,6 +1,7 @@
 <template>
   <div
     class="el-tree-node"
+    :level="nodeLevel"
     @click.stop="handleClick"
     @contextmenu="($event) => this.handleContextMenu($event)"
     v-show="node.visible"
@@ -24,9 +25,11 @@
     ref="node"
   >
     <div class="el-tree-node__content"
-      :style="{ 'padding-left': (node.level - 1) * tree.indent + 'px' }">
+      :style="{ 'padding-left': (node.level - 1) * tree.indent + 'px' }"
+      :class="[ `tree-node-level-${nodeLevel}`, tree.store.lastSelectedLeafNode && tree.store.lastSelectedLeafNode.data.id == node.data.id ? 'lastSelectedLeafNode' : '' ]">
       <span
-        class="el-tree-node__expand-icon el-icon-caret-right"
+        v-if="!arrowRight"
+        class="el-tree-node__expand-icon el-icon-arrow-right"
         @click.stop="handleExpandIconClick"
         :class="{ 'is-leaf': node.isLeaf, expanded: !node.isLeaf && expanded }">
       </span>
@@ -44,6 +47,12 @@
         class="el-tree-node__loading-icon el-icon-loading">
       </span>
       <node-content :node="node"></node-content>
+      <span
+        v-if="arrowRight"
+        class="el-tree-node__expand-icon el-icon-arrow-up"
+        @click.stop="handleExpandIconClick"
+        :class="{ 'is-leaf': node.isLeaf, expanded: !node.isLeaf && expanded }">
+      </span>
     </div>
     <el-collapse-transition>
       <div
@@ -54,7 +63,10 @@
         :aria-expanded="expanded"
       >
         <el-tree-node
+          :arrow-right="arrowRight"
+          :forbid-clk-levels="forbidClkLevels"
           :render-content="renderContent"
+          :node-level="nodeLevel+1"
           v-for="child in node.childNodes"
           :render-after-expand="renderAfterExpand"
           :key="getNodeKey(child)"
@@ -80,11 +92,14 @@
     mixins: [emitter],
 
     props: {
+      arrowRight: Boolean,
       node: {
         default() {
           return {};
         }
       },
+      nodeLevel: Number,  //xc: treeNode的层级
+      forbidClkLevels: Array, //xc: 禁止点击的 levels
       props: {},
       renderContent: Function,
       renderAfterExpand: {
@@ -160,8 +175,20 @@
       },
 
       handleClick() {
+        //xc add props: forbid-clk-levels
+        if(this.forbidClkLevels && this.forbidClkLevels.indexOf(this.nodeLevel) > -1) {
+          return;
+        }
+        
+
         const store = this.tree.store;
         store.setCurrentNode(this.node);
+        
+        //xc add叶子节点被点击后用 store.lastSelectedLeafNode 缓存起来
+        if(this.node.isLeaf) {
+          this.tree.store.lastSelectedLeafNode = this.node;
+        }
+
         this.tree.$emit('current-change', store.currentNode ? store.currentNode.data : null, store.currentNode);
         this.tree.currentNode = this;
         if (this.tree.expandOnClickNode) {
@@ -184,6 +211,10 @@
       },
 
       handleExpandIconClick() {
+        //xc add props: forbid-clk-levels
+        if(this.forbidClkLevels && this.forbidClkLevels.indexOf(this.nodeLevel) > -1) {
+          return;
+        }
         if (this.node.isLeaf) return;
         if (this.expanded) {
           this.tree.$emit('node-collapse', this.node.data, this.node, this);

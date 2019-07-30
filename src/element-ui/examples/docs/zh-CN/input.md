@@ -3,6 +3,7 @@
     data() {
       return {
         restaurants: [],
+        inputXc1: 'xcinputxcinputxcinputxcinputxcinputxcinputxcinputxcinputxcinputxcinputxcinputxcinputxcinputxcinput',
         input: '',
         input1: '',
         input2: '',
@@ -184,6 +185,28 @@
 
 通过鼠标或键盘输入字符
 
+
+### Xc Leung 测试增加属性 read-mode
+:::demo
+```html
+<el-input 
+  v-model="inputXc1" 
+  placeholder="请输入内容" 
+  :read-mode="true"></el-input>
+<span class="whatsb test-xcmixin-class test-height-xiaoying test-padding10">江东大翔队</span>
+<script>
+export default {
+  data() {
+    return {
+      input: ''
+    }
+  }
+}
+</script>
+```
+:::
+
+
 ### 基础用法
 
 :::demo
@@ -296,7 +319,7 @@ export default {
 ```
 :::
 
-### 文本域
+### 文本域xc改了readMode
 
 用于输入多行文本信息，通过将 `type` 属性的值指定为 textarea。
 
@@ -304,6 +327,7 @@ export default {
 ```html
 <el-input
   type="textarea"
+  :read-mode="true"
   :rows="2"
   placeholder="请输入内容"
   v-model="textarea">

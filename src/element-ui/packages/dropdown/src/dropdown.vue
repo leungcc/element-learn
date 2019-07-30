@@ -6,6 +6,8 @@
   import ElButtonGroup from 'element-ui/packages/button-group';
   import { generateId } from 'element-ui/src/utils/util';
 
+//xc modify at 2018-11-06: 新增props enter-not-hide{Boolean} 如果为true, 回车后不会触发收起
+
   export default {
     name: 'ElDropdown',
 
@@ -27,6 +29,11 @@
     },
 
     props: {
+      readMode: Boolean,
+      enterNotHide: {
+        type: Boolean,
+        default: false
+      },
       trigger: {
         type: String,
         default: 'hover'
@@ -55,11 +62,16 @@
       hideTimeout: {
         type: Number,
         default: 150
+      },
+      stopPropagation: {
+        type: Boolean,
+        default: false
       }
     },
 
     data() {
       return {
+        ss__readMode: false,
         timeout: null,
         visible: false,
         triggerElm: null,
@@ -77,6 +89,10 @@
       }
     },
 
+    created() {
+      this.ss__readMode = this.readMode;
+    },
+
     mounted() {
       this.$on('menu-item-click', this.handleMenuItemClick);
       this.initEvent();
@@ -84,6 +100,9 @@
     },
 
     watch: {
+      readMode(val, oldVal) {
+        this.ss__readMode = val;
+      },
       visible(val) {
         this.broadcast('ElDropdownMenu', 'visible', val);
         this.$emit('visible-change', val);
@@ -109,7 +128,7 @@
         };
       },
       show() {
-        if (this.triggerElm.disabled) return;
+        if (this.triggerElm.disabled || this.ss__readMode) return;
         clearTimeout(this.timeout);
         this.timeout = setTimeout(() => {
           this.visible = true;
@@ -124,7 +143,10 @@
           this.visible = false;
         }, this.trigger === 'click' ? 0 : this.hideTimeout);
       },
-      handleClick() {
+      handleClick(e) {
+        if(this.stopPropagation && e) 
+          e.stopPropagation();
+
         if (this.triggerElm.disabled) return;
         if (this.visible) {
           this.hide();
@@ -140,7 +162,7 @@
           this.menuItems[0].focus();
           ev.preventDefault();
           ev.stopPropagation();
-        } else if (keyCode === 13) { // space enter选中
+        } else if (keyCode === 13 && !this.enterNotHide) { // space enter选中
           this.handleClick();
         } else if ([9, 27].indexOf(keyCode) > -1) { // tab || esc
           this.hide();
@@ -164,7 +186,7 @@
           this.menuItems[nextIndex].focus();
           ev.preventDefault();
           ev.stopPropagation();
-        } else if (keyCode === 13) { // enter选中
+        } else if (keyCode === 13 && !this.enterNotHide) { // enter选中
           this.triggerElm.focus();
           target.click();
           if (this.hideOnClick) { // click关闭

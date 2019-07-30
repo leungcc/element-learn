@@ -5,7 +5,7 @@
         list: null,
         options: [{
           value: '选项1',
-          label: '黄金糕'
+          label: '黄金糕黄金糕黄金糕黄金糕黄金糕黄金糕黄金糕黄金糕黄金糕黄金糕黄金糕黄金糕黄金糕黄金糕'
         }, {
           value: '选项2',
           label: '双皮奶'
@@ -103,7 +103,9 @@
           value: 'Guangzhou',
           label: '广州'
         }],
-        value: '',
+        valuexc1: '选项1',
+        valuexc2: ['选项1', '选项2', '选项3'],
+        value: '21213',
         value2: '',
         value3: '',
         value4: '',
@@ -134,6 +136,10 @@
         } else {
           this.options4 = [];
         }
+      },
+
+      xcBtnOk() {
+        console.warn('xcBtnOk..');
       }
     }
   };
@@ -149,13 +155,91 @@
 
 当选项过多时，使用下拉菜单展示并选择内容。
 
+### xc Leung 测试 readMode下的 select
+readMode下的单选
+:::demo 
+```html
+<template>
+  <el-select 
+    v-model="valuexc1" 
+    placeholder="请选择" 
+    :no-option-match-null="true"
+    :read-mode="false">
+    <el-option
+      v-for="item in options"
+      :key="item.value"
+      :label="item.label"
+      :value="item.value">
+    </el-option>
+  </el-select>
+</template>
+
+<script>
+  export default {
+    data() {
+      return {
+        options: [{
+          value: '选项1',
+          label: '黄金糕'
+        }, {
+          value: '选项2',
+          label: '双皮奶'
+        }, {
+          value: '选项3',
+          label: '蚵仔煎'
+        }, {
+          value: '选项4',
+          label: '龙须面'
+        }, {
+          value: '选项5',
+          label: '北京烤鸭'
+        }],
+        value: ''
+      }
+    }
+  }
+</script>
+```
+:::
+
+### readMode多选
+:::demo
+```html
+<template>
+  <el-select
+    v-model="valuexc2"
+    multiple
+    collapse-tags
+    style="margin-left: 20px;"
+    placeholder="请选择"
+    :read-mode="false"
+    no-delete-tag>
+    <el-option
+      v-for="item in options"
+      :key="item.value"
+      :label="item.label"
+      :value="item.value">
+    </el-option>
+    <div slot="bottom">
+      <el-button size="mini" @click="xcBtnOk">确定</el-button>
+    </div>
+  </el-select>
+</template>
+```
+:::
+
+
 ### 基础用法
 
 适用广泛的基础单选
 :::demo `v-model`的值为当前被选中的`el-option`的 value 属性值
 ```html
 <template>
-  <el-select v-model="value" placeholder="请选择">
+  <el-select 
+    v-model="value" 
+    placeholder="请选择" 
+    :no-option-match-null="true"
+  >
     <el-option
       v-for="item in options"
       :key="item.value"
@@ -340,7 +424,8 @@
       v-for="item in options"
       :key="item.value"
       :label="item.label"
-      :value="item.value">
+      :value="item.value"
+      :disabled="true">
     </el-option>
   </el-select>
 

@@ -6,6 +6,7 @@
     :disabled="pickerDisabled"
     :size="pickerSize"
     :name="name"
+    :read-mode="ss__readMode"
     v-bind="firstInputId"
     v-if="!ranged"
     v-clickoutside="handleClose"
@@ -22,13 +23,14 @@
     <i slot="prefix"
       class="el-input__icon"
       :class="triggerClass"
-      @click="handleFocus">
+      @click="handleFocus"
+      v-if="!ss__readMode">
     </i>
     <i slot="suffix"
       class="el-input__icon"
       @click="handleClickIcon"
       :class="[showClose ? '' + clearIcon : '']"
-      v-if="haveTrigger">
+      v-if="haveTrigger && !ss__readMode">
     </i>
   </el-input>
   <div
@@ -37,7 +39,8 @@
       'el-date-editor--' + type,
       pickerSize ? `el-range-editor--${ pickerSize }` : '',
       pickerDisabled ? 'is-disabled' : '',
-      pickerVisible ? 'is-active' : ''
+      pickerVisible ? 'is-active' : '',
+      ss__readMode ? 'nobdr' : ''
     ]"
     @click="handleRangeClick"
     @mouseenter="handleMouseEnter"
@@ -48,23 +51,27 @@
     v-else>
     <i :class="['el-input__icon', 'el-range__icon', triggerClass]"></i>
     <input
+      autocomplete="off"
       :placeholder="startPlaceholder"
       :value="displayValue && displayValue[0]"
       :disabled="pickerDisabled"
       v-bind="firstInputId"
-      :readonly="!editable || readonly"
+      :readonly="!editable || readonly || ss__readMode"
       :name="name && name[0]"
       @input="handleStartInput"
       @change="handleStartChange"
       @focus="handleFocus"
       class="el-range-input">
-    <span class="el-range-separator">{{ rangeSeparator }}</span>
+    <slot name="range-separator">
+      <span class="el-range-separator">{{ rangeSeparator }}</span>
+    </slot>
     <input
+      autocomplete="off"
       :placeholder="endPlaceholder"
       :value="displayValue && displayValue[1]"
       :disabled="pickerDisabled"
       v-bind="secondInputId"
-      :readonly="!editable || readonly"
+      :readonly="!editable || readonly || ss__readMode"
       :name="name && name[1]"
       @input="handleEndInput"
       @change="handleEndChange"
@@ -72,7 +79,7 @@
       class="el-range-input">
     <i
       @click="handleClickIcon"
-      v-if="haveTrigger"
+      v-if="haveTrigger && !ss__readMode"
       :class="[showClose ? '' + clearIcon : '']"
       class="el-input__icon el-range__close-icon">
     </i>
@@ -341,6 +348,7 @@ export default {
   },
 
   props: {
+    readMode: Boolean,
     size: String,
     format: String,
     valueFormat: String,
@@ -391,6 +399,7 @@ export default {
 
   data() {
     return {
+      ss__readMode: false,
       pickerVisible: false,
       showClose: false,
       userInput: null,
@@ -400,6 +409,9 @@ export default {
   },
 
   watch: {
+    readMode(val, oldVal) {
+      this.ss__readMode = val;
+    },
     pickerVisible(val) {
       if (this.readonly || this.pickerDisabled) return;
       if (val) {
@@ -419,7 +431,6 @@ export default {
       handler(val) {
         if (this.picker) {
           this.picker.value = val;
-          this.picker.selectedDate = Array.isArray(val) ? val : [];
         }
       }
     },
@@ -427,6 +438,11 @@ export default {
       // NOTE: should eventually move to jsx style picker + panel ?
       if (this.picker) {
         this.picker.defaultValue = val;
+      }
+    },
+    value(val, oldVal) {
+      if (!valueEquals(val, oldVal) && !this.pickerVisible) {
+        this.dispatch('ElFormItem', 'el.form.change', val);
       }
     }
   },
@@ -561,6 +577,7 @@ export default {
   },
 
   created() {
+    this.ss__readMode = this.readMode;
     // vue-popper
     this.popperOptions = {
       boundariesPadding: 0,
@@ -700,15 +717,11 @@ export default {
     handleClose() {
       if (!this.pickerVisible) return;
       this.pickerVisible = false;
-      const {
-        type,
-        valueOnOpen,
-        valueFormat,
-        rangeSeparator
-      } = this;
-      if (type === 'dates' && this.picker) {
-        this.picker.selectedDate = parseAsFormatAndType(valueOnOpen, valueFormat, type, rangeSeparator) || valueOnOpen;
-        this.emitInput(this.picker.selectedDate);
+
+      if (this.type === 'dates') {
+        // restore to former value
+        const oldValue = parseAsFormatAndType(this.valueOnOpen, this.valueFormat, this.type, this.rangeSeparator) || this.valueOnOpen;
+        this.emitInput(oldValue);
       }
     },
 
@@ -717,6 +730,8 @@ export default {
     },
 
     handleFocus() {
+      //xc mark:
+      if(this.ss__readMode) return;
       const type = this.type;
 
       if (HAVE_TRIGGER_TYPES.indexOf(type) !== -1 && !this.pickerVisible) {
@@ -779,6 +794,7 @@ export default {
     },
 
     handleRangeClick() {
+      if(this.ss__readMode) return;
       const type = this.type;
 
       if (HAVE_TRIGGER_TYPES.indexOf(type) !== -1 && !this.pickerVisible) {
@@ -823,7 +839,6 @@ export default {
       this.picker.selectionMode = this.selectionMode;
       this.picker.unlinkPanels = this.unlinkPanels;
       this.picker.arrowControl = this.arrowControl || this.timeArrowControl || false;
-      this.picker.selectedDate = Array.isArray(this.value) && this.value || [];
       this.$watch('format', (format) => {
         this.picker.format = format;
       });

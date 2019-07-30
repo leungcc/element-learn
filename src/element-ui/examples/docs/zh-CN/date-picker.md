@@ -66,8 +66,8 @@
         value10: '',
         value11: '',
         value12: '',
-        value13: [],
-        value14: []
+        value13: '',
+        value14: ['2018-11-09']
       };
     }
   };
@@ -89,7 +89,7 @@
       border-right: none;
     }
   }
-  
+
   .demo-date-picker .container {
     flex: 1;
     border-right: solid 1px #EFF2F6;
@@ -219,6 +219,7 @@
     <span class="demonstration">多个日期</span>
     <el-date-picker
       type="dates"
+      value-format="yyyy-MM-dd"
       v-model="value14"
       placeholder="选择一个或多个日期">
     </el-date-picker>
@@ -232,7 +233,7 @@
         value3: '',
         value4: '',
         value5: '',
-        value14: []
+        value14: ''
       };
     }
   };
@@ -418,7 +419,7 @@
   export default {
     data() {
       return {
-        value13: []
+        value13: ''
       };
     }
   };
